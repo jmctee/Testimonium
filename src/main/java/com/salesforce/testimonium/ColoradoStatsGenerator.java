@@ -12,6 +12,10 @@ public class ColoradoStatsGenerator implements StatsGenerator {
         this.sensor = new ColoradoSensor();
     }
 
+    public ColoradoStatsGenerator(Sensor sensor) {
+        this.sensor = sensor;
+    }
+
     @Override
     public StatsSummary getStatsSummaryOverTimeInterval(LocalDateTime startTime, LocalDateTime endTime, Duration interval) {
         List<SensorReading> readings = sensor.getReadings(startTime, endTime, interval);
