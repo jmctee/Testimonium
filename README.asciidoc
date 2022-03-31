@@ -1,0 +1,51 @@
+Project Testimonium
+-------------------
+
+_**Testimonium** \ ˌtes-tə-ˈmō-nē-əm- \ (n): Evidence in support of a fact or statement; proof._
+
+This project provides a simple example of unit testing in Java and how mocking and dependency injection can both simplify and expand what can be tested in your code.
+
+The conceipt of the project is that we have a large sensor network (measuring, errr, stuff, yeah, stuff!) we need to collect data from. We need to collect the measurements and summarize them using some standard statistical algorithms, arithmetic mean, median, and standard deviation. In addition, the sensors sometimes cannot collect valid information, so some of the returned readings are not valid. We need to know what percentage of the readings in a collecton are invalid so we know how accurate the statistics on the data are.
+
+Bootstrap Process
+-----------------
+
+To manually bootstrap the project:
+
+_Ensure you have java 11 or greater and git installed._
+
+```
+git clone git@github.com:jmctee/Testimonium.git
+cd Testimonium
+
+On Macs and Linux:
+./gradlew build
+
+On Windows:
+.\gradlew.bat build
+```
+
+Project now ready for use, open in the IDE of your choice and got to town!
+
+Project Design
+--------------
+
+image::classDiagram.png[class diagram]
+
+A first cut at testing
+----------------------
+
+For this example, we will focus on testing the _ColoradoStatsGenerator_. We are only interested in verifying the behavior of this class, not others. We call this type of testing _"unit testing"_. But this class depends on other classes. Some of them, like _SensorReading_ and _StatsSummary_, are POJOs (plain old java objects). We can use them with little concern for any testing issues that they may cause.
+
+The class also depends on a _ColoradoSensor_, which is a much more complicated class. In this example, it is written to simulate how a real world sensor class might work. IRL, the class would have to make a network connection, post a request to a sensor, wait for the response, then package it up for consumption. We simulate all of this by generating a set of random measurements and add a delay to simulate network and sensor latencies. But we're pretending all the real world stuff is happening as far as this project is concerned. This class poses a challenge for testing.
+
+As a first step, let's just assume our tests will use the sensor class as is. This means our test will depend on having a working network connection and sensor to run. And we get back random measurements, with no control of their values, so while an important test to have somewhere (we call these types of tests _"functional"_ or _"integration tests"_, it does not really fit with our stated goal of focusing on ColoradoStatsGenerator. In addition, we can't control the measurements and behaviors of the sensor class to test any edge cases.
+
+You can see the test I created for this first scenario in the main branch of the project. Look in _TestColoradoStatsGenerator_ to inspect the test. It should be obvious that because the returned sensor readings are random, the test has to do a lot of work to validate the calculations. Would be nice if we could simplify our test code. And as noted earlier, we cannot tune the test to look at edge cases. Finally, the test takes 2 seconds to run! This might not sound like much, but what if we plan to build out a sensor network that numbers in the tens of thousands! It adds up. Slow tests mean slow feedback, which is the opposite of what you want from a test.
+
+_Note, for all of issues noted above, this test does pass, so it is better than nothing. But can we do better?_
+
+Let's mock it!
+--------------
+
+Check out the branch _testUsingMocks_ and we'll look at a potentially better approach to unit testing.
