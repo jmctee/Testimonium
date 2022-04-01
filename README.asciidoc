@@ -49,3 +49,26 @@ Let's mock it!
 --------------
 
 Check out the branch _testUsingMocks_ and we'll look at a potentially better approach to unit testing.
+
+`git checkout testUsingMocks`
+
+You'll see two major changes. First, the constructor of _ColoradoStatsGenerator_ now takes an argument, a _Sensor_. This technique is often called https://en.wikipedia.org/wiki/Dependency_injection[Dependency Injection] (DI). The stats generator depends on a sensor to get its data. Rather than letting the class create its dependency, it is "injected" into the class. From the classes viewpoint, it does not have any knowledge of the _Sensor_ class being injected other than the contract outlined in the interface.
+
+There are several strategies and tools for DI, this one is called constructor injection and is useful for simple cases like this.
+
+_Note: Since ColoradoStatsGenerator no longer depends directly on a ColoradoSensor, it should really be renamed, one common pattern when there is only one concrete implementation of an interface is to add Impl the end of the name, e.g., StatsGeneratorImpl. That said, because this is an example and I need to jump back and forth between branches, I am not changing the name._
+
+The second change is to the test. An _executeTest_ method is added where all of the key work takes place. Then tests are written which take advantage of this test method. Each test prepares the data and expected responses, then calls the test method to actually run the test.
+
+Currently, four tests have been implemented:
+
+* A test of well-formed data where all readings are valid
+* A test of well-formed data where some readings are invalid
+* A test of well-formed data where all readings are invalid
+* A test where no readings are returned
+
+There is obviously room to test many more scenarios, but even with this small set of scenarios, the benefit of mocking and DI should be obvious. By controlling the data returned by the sensor, it is much easier to test scenarios that may be uncommon IRL, but whose behavior, we need to understand/verify.
+
+Also, note the difference in testing time. The test using the physical sensor not only gave us no control of the data, but alos took over 2 seconds to run. The mocked test, which covered four very useful scenarios, took less than 50 milliseconds to run.
+
+*Fast and extensive testing!*
