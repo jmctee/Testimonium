@@ -8,10 +8,6 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 public class ColoradoStatsGenerator implements StatsGenerator {
     private Sensor sensor;
 
-    public ColoradoStatsGenerator() {
-        this.sensor = new ColoradoSensor();
-    }
-
     public ColoradoStatsGenerator(Sensor sensor) {
         this.sensor = sensor;
     }
